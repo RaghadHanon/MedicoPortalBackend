@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SoftwareProject.API.Authentication;
 using SoftwareProject.API.Entites;
-using SoftwareProject.API.dto.MedicalSpecification;
+using SoftwareProject.API.dto.MS;
 
 namespace SoftwareProject.API.Controllers
 {
@@ -32,8 +32,8 @@ namespace SoftwareProject.API.Controllers
             {
                 MSList.Add(new MedicalSpecificationGetDto
                 {
-                    MedicalSpecificationId = ms.MedicalSpecificationId,
-                    Name = ms.Name
+                    MSId = ms.MedicalSpecificationId,
+                    MSName = ms.Name
                 });
             }
 

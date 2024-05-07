@@ -16,6 +16,7 @@ namespace SoftwareProject.API
         public DbSet<Admin> Admins { get; set; }
         public DbSet<MedicalSpecification> MedicalSpecifications { get; set; }
         public DbSet<Clinic> Clinics { get; set; }
+        public DbSet<Request> Requests { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -57,6 +58,19 @@ namespace SoftwareProject.API
                 .IsRequired(false)  
                 .OnDelete(DeleteBehavior.SetNull);
 
+            modelBuilder.Entity<Request>()
+                .HasOne(r => r.Patient)
+                .WithMany(p => p.Requests)
+                .HasForeignKey(r => r.PatientId)
+                .IsRequired(false)
+                .OnDelete(DeleteBehavior.NoAction);
+
+            modelBuilder.Entity<Request>()
+                .HasOne(r => r.Doctor)
+                .WithMany(d => d.Requests)
+                .HasForeignKey(r => r.DoctorId)
+                .IsRequired(false)
+                .OnDelete(DeleteBehavior.NoAction);
         }
     }
 }

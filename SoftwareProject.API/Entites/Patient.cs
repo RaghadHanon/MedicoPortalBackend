@@ -7,5 +7,7 @@
         public string? BloodType { get; set; } = "";
         public float Height { get; set;}
         public float Weight { get; set;}
+
+        public List<Request>? Requests { get; set; }
     }
 }

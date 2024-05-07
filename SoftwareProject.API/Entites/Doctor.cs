@@ -12,5 +12,7 @@
 
         public int? ClinicId { get; set; }
         public Clinic? Clinic { get; set; }
+
+        public List<Request>? Requests { get; set; } 
     }
 }

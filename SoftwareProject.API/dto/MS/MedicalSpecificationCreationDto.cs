@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace SoftwareProject.API.dto.MedicalSpecification
+namespace SoftwareProject.API.dto.MS
 {
     public class MedicalSpecificationCreationDto
     {

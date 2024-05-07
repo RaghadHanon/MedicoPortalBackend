@@ -12,8 +12,8 @@ using SoftwareProject.API;
 namespace SoftwareProject.API.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240430120736_initial")]
-    partial class initial
+    [Migration("20240507153030_init")]
+    partial class init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -151,6 +151,36 @@ namespace SoftwareProject.API.Migrations
                     b.ToTable("Patients");
                 });
 
+            modelBuilder.Entity("SoftwareProject.API.Entites.Request", b =>
+                {
+                    b.Property<int>("RequestId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("RequestId"));
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("DoctorId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("PatientId")
+                        .HasColumnType("int");
+
+                    b.HasKey("RequestId");
+
+                    b.HasIndex("DoctorId");
+
+                    b.HasIndex("PatientId");
+
+                    b.ToTable("Requests");
+                });
+
             modelBuilder.Entity("SoftwareProject.API.Entites.User", b =>
                 {
                     b.Property<int>("UserId")
@@ -161,9 +191,6 @@ namespace SoftwareProject.API.Migrations
 
                     b.Property<string>("Address")
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateOnly?>("BirthOfDate")
-                        .HasColumnType("date");
 
                     b.Property<string>("Email")
                         .IsRequired()
@@ -236,15 +263,42 @@ namespace SoftwareProject.API.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("SoftwareProject.API.Entites.Request", b =>
+                {
+                    b.HasOne("SoftwareProject.API.Entites.Doctor", "Doctor")
+                        .WithMany("Requests")
+                        .HasForeignKey("DoctorId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.HasOne("SoftwareProject.API.Entites.Patient", "Patient")
+                        .WithMany("Requests")
+                        .HasForeignKey("PatientId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.Navigation("Doctor");
+
+                    b.Navigation("Patient");
+                });
+
             modelBuilder.Entity("SoftwareProject.API.Entites.Clinic", b =>
                 {
                     b.Navigation("Doctor")
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("SoftwareProject.API.Entites.Doctor", b =>
+                {
+                    b.Navigation("Requests");
+                });
+
             modelBuilder.Entity("SoftwareProject.API.Entites.MedicalSpecification", b =>
                 {
                     b.Navigation("Doctors");
+                });
+
+            modelBuilder.Entity("SoftwareProject.API.Entites.Patient", b =>
+                {
+                    b.Navigation("Requests");
                 });
 #pragma warning restore 612, 618
         }

@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace SoftwareProject.API.Migrations
 {
     /// <inheritdoc />
-    public partial class initial : Migration
+    public partial class init : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -52,8 +52,7 @@ namespace SoftwareProject.API.Migrations
                     Address = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     UserImageUrl = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Gender = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Role = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    BirthOfDate = table.Column<DateOnly>(type: "date", nullable: true)
+                    Role = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -135,6 +134,32 @@ namespace SoftwareProject.API.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "Requests",
+                columns: table => new
+                {
+                    RequestId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Date = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    PatientId = table.Column<int>(type: "int", nullable: true),
+                    DoctorId = table.Column<int>(type: "int", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Requests", x => x.RequestId);
+                    table.ForeignKey(
+                        name: "FK_Requests_Doctors_DoctorId",
+                        column: x => x.DoctorId,
+                        principalTable: "Doctors",
+                        principalColumn: "DoctorId");
+                    table.ForeignKey(
+                        name: "FK_Requests_Patients_PatientId",
+                        column: x => x.PatientId,
+                        principalTable: "Patients",
+                        principalColumn: "PatientId");
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_Admins_UserId",
                 table: "Admins",
@@ -164,6 +189,16 @@ namespace SoftwareProject.API.Migrations
                 table: "Patients",
                 column: "UserId",
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Requests_DoctorId",
+                table: "Requests",
+                column: "DoctorId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Requests_PatientId",
+                table: "Requests",
+                column: "PatientId");
         }
 
         /// <inheritdoc />
@@ -171,6 +206,9 @@ namespace SoftwareProject.API.Migrations
         {
             migrationBuilder.DropTable(
                 name: "Admins");
+
+            migrationBuilder.DropTable(
+                name: "Requests");
 
             migrationBuilder.DropTable(
                 name: "Doctors");

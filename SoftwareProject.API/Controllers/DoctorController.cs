@@ -4,9 +4,10 @@ using Microsoft.EntityFrameworkCore;
 using SoftwareProject.API.dto.Doctor;
 using SoftwareProject.API.Authentication;
 using SoftwareProject.API.Entites;
-using SoftwareProject.API.dto;
 using Microsoft.AspNetCore.Authorization;
 using SoftwareProject.API.Enums;
+using SoftwareProject.API.dto.clinic;
+using SoftwareProject.API.dto.MS;
 
 namespace SoftwareProject.API.Controllers
 {
@@ -53,6 +54,52 @@ namespace SoftwareProject.API.Controllers
                                         .ToListAsync();
         }
 
+        [HttpGet("doctor/{userName}")]
+        public async Task<ActionResult<SpecificDoctorGetDto>> GetSpecificDoctor(string userName)
+        {
+            var user = await applicationDbContext.Users.FirstOrDefaultAsync(u => u.Name == userName);
+
+            if(user == null)
+            {
+                return NotFound(new Response { Status="error", Message="User with this user name not exist !"});
+            }
+
+            var doctor = await applicationDbContext.Doctors.Include(d => d.MedicalSpecification)
+                                                           .Include(d => d.Clinic)
+                                                           .FirstOrDefaultAsync(d => d.UserId == user.UserId);
+
+            if(doctor == null)
+            {
+                return NotFound(new Response { Status = "error", Message = "Doctor with this name not exist !" });
+            }
+
+            var clinicToReturn = new ClinicGetDto
+            {
+                ClinicId = doctor.Clinic is null ? -1 : doctor.Clinic.ClinicId,
+                ClinicName = doctor.Clinic is null ? "No Clinic Yet !" : doctor.Clinic.Name,
+                Location = doctor.Clinic is null ? "No Clinic Yet !" : doctor.Clinic.Location,
+                OpenHours = doctor.Clinic is null ? "No Clinic Yet !" : doctor.Clinic.OpenHours,
+            };
+
+            var msToReturn = new MedicalSpecificationGetDto
+            {
+                MSId = doctor.MedicalSpecificationId,
+                MSName = doctor.MedicalSpecification.Name,
+            };
+
+            var doctorToReturn = new SpecificDoctorGetDto
+            {
+                DoctorId = doctor.DoctorId,
+                Name = user.Name,
+                Bio = doctor.Bio,
+                CVUrl = doctor.CVUrl,
+                Clinic = clinicToReturn,
+                MedicalSpecification = msToReturn,
+            };
+
+            return Ok( doctorToReturn );
+        }
+
         [HttpGet("medicalSpecification/{medicalSpecificationId}/doctors")]
         public async Task<ActionResult<List<DoctorGetDto>>> GetAllDoctorsWithSpecificSpecification(int medicalSpecificationId)
         {
@@ -90,7 +137,7 @@ namespace SoftwareProject.API.Controllers
 
         [HttpPost("doctor/clinic")]
         [Authorize(Roles = "Doctor")]
-        public async Task<IActionResult> UpdateClinic(ClinicDto clinicDto)
+        public async Task<IActionResult> UpdateClinic(ClinicCreationDto clinicDto)
         {
             var userIdClaim = User.FindFirst("id");
 
