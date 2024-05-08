@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Authorization;
 using SoftwareProject.API.Enums;
 using SoftwareProject.API.dto.clinic;
 using SoftwareProject.API.dto.MS;
+using SoftwareProject.API.dto.Request;
 
 namespace SoftwareProject.API.Controllers
 {
@@ -202,6 +203,52 @@ namespace SoftwareProject.API.Controllers
 
             await applicationDbContext.SaveChangesAsync();
             return Ok(new Response { Status = "Success", Message = "Doctor Data updated successfully." });
+        }
+        [HttpGet("doctor/requests")]
+        public async Task<ActionResult> GetAllRequestsForLoggedInDoctor()
+        {
+            var userIdClaim = User.FindFirst("id");
+
+            if (userIdClaim == null || !int.TryParse(userIdClaim.Value, out int userId))
+            {
+                return Unauthorized(new Response { Status = "Error", Message = "Invalid token." });
+            }
+
+            var doctor = await applicationDbContext.Doctors
+                                    .FirstOrDefaultAsync(p => p.UserId == userId);
+
+            if (doctor == null)
+            {
+                return NotFound(new Response { Status = "Error", Message = "Doctor not found." });
+            }
+
+            var requests = await applicationDbContext.Requests
+                                                     .Where(r => r.DoctorId == doctor.DoctorId)
+                                                     .Include(r => r.Patient)
+                                                     .ToListAsync();
+
+            var doctorUser = await applicationDbContext.Users.FirstOrDefaultAsync(u => u.UserId == doctor.UserId);
+
+            var requestsToReturn = new List<RequestGetDto>();
+
+            foreach (var request in requests)
+            {
+                var patientUser = await applicationDbContext.Users.FirstOrDefaultAsync(u => u.UserId == request.Patient.UserId);
+
+                requestsToReturn.Add(new RequestGetDto
+                {
+                    RequestId = request.RequestId,
+                    Description = request.Description,
+                    Date = request.Date,
+                    PatientId = request.PatientId,
+                    PatientName = patientUser.Name,
+                    DoctorId = request.DoctorId,
+                    DoctorName = doctorUser.Name,
+                }
+                );
+            }
+
+            return Ok(requestsToReturn);
         }
     }
 }
