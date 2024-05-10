@@ -24,7 +24,7 @@ namespace SoftwareProject.API.Controllers
             this.applicationDbContext = applicationDbContext ??
                 throw new ArgumentNullException(nameof(applicationDbContext));
         }
-        [HttpGet("patient/{userName}")]
+        [HttpGet("{userName}")]
         public async Task<ActionResult<SpecificDoctorGetDto>> GetSpecificPatient(string userName)
         {
             var user = await applicationDbContext.Users.FirstOrDefaultAsync(u => u.Name == userName);
@@ -56,7 +56,7 @@ namespace SoftwareProject.API.Controllers
 
             return Ok(patientToReturn);
         }
-        [HttpPost("patient/profileData")]
+        [HttpPost("profileData")]
         [Authorize(Roles = "Patient")]
         public async Task<IActionResult> SetProfileData(PatientDataDto patientDataDto)
         {
@@ -164,7 +164,7 @@ namespace SoftwareProject.API.Controllers
                 );
         }
 
-        [HttpPost("patient/bloodPressure")]
+        [HttpPost("bloodPressure")]
         [Authorize(Roles = "Patient")]
         public async Task<IActionResult> UpdateBloodPressure(BloodPressureCreationDto BloodPressureDto)
         {
@@ -241,7 +241,7 @@ namespace SoftwareProject.API.Controllers
             return Ok(bloodBressuresToReturn);
         }
 
-        [HttpPost("patient/bloodSugar")]
+        [HttpPost("bloodSugar")]
         [Authorize(Roles = "Patient")]
         public async Task<IActionResult> UpdateBloodSugar(BloodSugarCreationDto BloodSugarDto)
         {
