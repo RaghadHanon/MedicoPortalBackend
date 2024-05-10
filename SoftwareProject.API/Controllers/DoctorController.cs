@@ -9,6 +9,7 @@ using SoftwareProject.API.Enums;
 using SoftwareProject.API.dto.clinic;
 using SoftwareProject.API.dto.MS;
 using SoftwareProject.API.dto.Request;
+using System.Net;
 
 namespace SoftwareProject.API.Controllers
 {
@@ -38,6 +39,7 @@ namespace SoftwareProject.API.Controllers
                                                 {
                                                     DoctorId = doctor.DoctorId,
                                                     Name = user.Name,
+                                                    Gender = user.Gender,
                                                     MedicalSpecificationId = doctor.MedicalSpecification != null ?
                                                                                doctor.MedicalSpecificationId :
                                                                                null,
@@ -92,6 +94,10 @@ namespace SoftwareProject.API.Controllers
             {
                 DoctorId = doctor.DoctorId,
                 Name = user.Name,
+                Gender = user.Gender,
+                Address =user.Address,
+                PhoneNumber = user.PhoneNumber,
+                Email = user.Email,
                 Bio = doctor.Bio,
                 CVUrl = doctor.CVUrl,
                 Clinic = clinicToReturn,
@@ -124,10 +130,12 @@ namespace SoftwareProject.API.Controllers
                                         .Join(applicationDbContext.Users,
                                                 doctor => doctor.UserId,
                                                 user => user.UserId,
+
                                                 (doctor, user) => new DoctorGetDto
                                                 {
                                                     DoctorId = doctor.DoctorId,
                                                     Name = user.Name,
+                                                    Gender = user.Gender,
                                                     MedicalSpecificationId = medicalSpecificationId,
                                                     MedicalSpecificationName = doctor.MedicalSpecification.Name
                                                 }

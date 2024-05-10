@@ -4,6 +4,8 @@
     {
         public int DoctorId { get; set; }
         public string Name { get; set; }
+        public string Gender { get; set; }
+        
         public int? ClinicId { get; set; }
         public string? ClinicName { get; set; }
         public int? MedicalSpecificationId { get; set; }
