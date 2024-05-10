@@ -17,6 +17,8 @@ namespace SoftwareProject.API
         public DbSet<MedicalSpecification> MedicalSpecifications { get; set; }
         public DbSet<Clinic> Clinics { get; set; }
         public DbSet<Request> Requests { get; set; }
+        public DbSet<BloodPressure> BloodPressures { get; set; }
+        public DbSet<BloodSugar> BloodSugars { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -69,6 +71,21 @@ namespace SoftwareProject.API
                 .HasOne(r => r.Doctor)
                 .WithMany(d => d.Requests)
                 .HasForeignKey(r => r.DoctorId)
+                .IsRequired(false)
+                .OnDelete(DeleteBehavior.NoAction);
+
+
+            modelBuilder.Entity<BloodPressure>()
+                .HasOne(r => r.Patient)
+                .WithMany(p => p.BloodPressure)
+                .HasForeignKey(r => r.PatientId)
+                .IsRequired(false)
+                .OnDelete(DeleteBehavior.NoAction);
+
+            modelBuilder.Entity<BloodSugar>()
+                .HasOne(r => r.Patient)
+                .WithMany(p => p.BloodSugar)
+                .HasForeignKey(r => r.PatientId)
                 .IsRequired(false)
                 .OnDelete(DeleteBehavior.NoAction);
         }

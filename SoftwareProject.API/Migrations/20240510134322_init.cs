@@ -135,6 +135,46 @@ namespace SoftwareProject.API.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "BloodPressures",
+                columns: table => new
+                {
+                    BloodPressureId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Value = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Date = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    PatientId = table.Column<int>(type: "int", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_BloodPressures", x => x.BloodPressureId);
+                    table.ForeignKey(
+                        name: "FK_BloodPressures_Patients_PatientId",
+                        column: x => x.PatientId,
+                        principalTable: "Patients",
+                        principalColumn: "PatientId");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "BloodSugars",
+                columns: table => new
+                {
+                    BloodSugarId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Value = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Date = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    PatientId = table.Column<int>(type: "int", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_BloodSugars", x => x.BloodSugarId);
+                    table.ForeignKey(
+                        name: "FK_BloodSugars_Patients_PatientId",
+                        column: x => x.PatientId,
+                        principalTable: "Patients",
+                        principalColumn: "PatientId");
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Requests",
                 columns: table => new
                 {
@@ -165,6 +205,16 @@ namespace SoftwareProject.API.Migrations
                 table: "Admins",
                 column: "UserId",
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_BloodPressures_PatientId",
+                table: "BloodPressures",
+                column: "PatientId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_BloodSugars_PatientId",
+                table: "BloodSugars",
+                column: "PatientId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Doctors_ClinicId",
@@ -206,6 +256,12 @@ namespace SoftwareProject.API.Migrations
         {
             migrationBuilder.DropTable(
                 name: "Admins");
+
+            migrationBuilder.DropTable(
+                name: "BloodPressures");
+
+            migrationBuilder.DropTable(
+                name: "BloodSugars");
 
             migrationBuilder.DropTable(
                 name: "Requests");

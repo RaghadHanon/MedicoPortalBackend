@@ -41,6 +41,56 @@ namespace SoftwareProject.API.Migrations
                     b.ToTable("Admins");
                 });
 
+            modelBuilder.Entity("SoftwareProject.API.Entites.BloodPressure", b =>
+                {
+                    b.Property<int>("BloodPressureId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("BloodPressureId"));
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("PatientId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Value")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("BloodPressureId");
+
+                    b.HasIndex("PatientId");
+
+                    b.ToTable("BloodPressures");
+                });
+
+            modelBuilder.Entity("SoftwareProject.API.Entites.BloodSugar", b =>
+                {
+                    b.Property<int>("BloodSugarId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("BloodSugarId"));
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("PatientId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Value")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("BloodSugarId");
+
+                    b.HasIndex("PatientId");
+
+                    b.ToTable("BloodSugars");
+                });
+
             modelBuilder.Entity("SoftwareProject.API.Entites.Clinic", b =>
                 {
                     b.Property<int>("ClinicId")
@@ -229,6 +279,26 @@ namespace SoftwareProject.API.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("SoftwareProject.API.Entites.BloodPressure", b =>
+                {
+                    b.HasOne("SoftwareProject.API.Entites.Patient", "Patient")
+                        .WithMany("BloodPressure")
+                        .HasForeignKey("PatientId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.Navigation("Patient");
+                });
+
+            modelBuilder.Entity("SoftwareProject.API.Entites.BloodSugar", b =>
+                {
+                    b.HasOne("SoftwareProject.API.Entites.Patient", "Patient")
+                        .WithMany("BloodSugar")
+                        .HasForeignKey("PatientId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.Navigation("Patient");
+                });
+
             modelBuilder.Entity("SoftwareProject.API.Entites.Doctor", b =>
                 {
                     b.HasOne("SoftwareProject.API.Entites.Clinic", "Clinic")
@@ -295,6 +365,10 @@ namespace SoftwareProject.API.Migrations
 
             modelBuilder.Entity("SoftwareProject.API.Entites.Patient", b =>
                 {
+                    b.Navigation("BloodPressure");
+
+                    b.Navigation("BloodSugar");
+
                     b.Navigation("Requests");
                 });
 #pragma warning restore 612, 618

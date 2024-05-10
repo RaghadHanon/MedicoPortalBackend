@@ -9,5 +9,9 @@
         public float Weight { get; set;}
 
         public List<Request>? Requests { get; set; }
+
+
+        public List<BloodPressure>? BloodPressure { get; set; }
+        public List<BloodSugar>? BloodSugar { get; set; }
     }
 }
