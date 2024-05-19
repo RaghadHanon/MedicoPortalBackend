@@ -13,6 +13,14 @@
         public int? ClinicId { get; set; }
         public Clinic? Clinic { get; set; }
 
-        public List<Request>? Requests { get; set; } 
+        public List<Request>? Requests { get; set; }
+
+        public List<Allergy>? Allergys { get; set; }
+
+        public List<ChronicDisease>? ChronicDiseases { get; set; }
+
+        public List<GeneralReport>? GeneralReports { get; set; }
+
+        public List<Medicine>? Medicines { get; set;}
     }
 }

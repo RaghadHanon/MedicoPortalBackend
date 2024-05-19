@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SoftwareProject.API.Authentication;
@@ -13,14 +14,19 @@ namespace SoftwareProject.API.Controllers
     {
         private readonly ApplicationDbContext applicationDbContext;
         private readonly TokenGenerator tokenGenerator;
+        private readonly PasswordHasher<User> passwordHasher;
 
-        public AuthenticationController(ApplicationDbContext applicationDbContext, TokenGenerator tokenGenerator)
+        public AuthenticationController(ApplicationDbContext applicationDbContext, TokenGenerator tokenGenerator, PasswordHasher<User> passwordHasher)
         {
             this.applicationDbContext = applicationDbContext ??
                 throw new ArgumentNullException(nameof(applicationDbContext));
 
             this.tokenGenerator = tokenGenerator ??
                 throw new ArgumentNullException(nameof(tokenGenerator));
+
+            this.passwordHasher = passwordHasher ??
+                throw new ArgumentNullException(nameof(passwordHasher));
+
         }
 
         [HttpPost("login")]
@@ -34,7 +40,9 @@ namespace SoftwareProject.API.Controllers
                 );
             }
 
-            if(user.Password != loginRequest.Password)
+            var result = passwordHasher.VerifyHashedPassword(user, user.Password, loginRequest.Password);
+
+            if (result != PasswordVerificationResult.Success)
             {
                 return Unauthorized(
                     new Response { Status = "Error", Message = "Password dose not match !" }
@@ -88,7 +96,7 @@ namespace SoftwareProject.API.Controllers
             {
                 Name = request.Name,
                 Email = request.Email,
-                Password = request.Password,
+                Password = passwordHasher.HashPassword(null, request.Password),
                 Gender = request.Gender,
                 Role = Role.Doctor,
                 PhoneNumber = request.PhoneNumber,
@@ -136,7 +144,7 @@ namespace SoftwareProject.API.Controllers
             {
                 Name = request.Name,
                 Email = request.Email,
-                Password = request.Password,
+                Password = passwordHasher.HashPassword(null, request.Password),
                 Gender = request.Gender,
                 Role = Role.Patient,
                 PhoneNumber = request.PhoneNumber,
@@ -183,7 +191,7 @@ namespace SoftwareProject.API.Controllers
             {
                 Name = request.Name,
                 Email = request.Email,
-                Password = request.Password,
+                Password = passwordHasher.HashPassword(null, request.Password),
                 Gender = request.Gender,
                 Role = Role.Admin
             };

@@ -19,6 +19,10 @@ namespace SoftwareProject.API
         public DbSet<Request> Requests { get; set; }
         public DbSet<BloodPressure> BloodPressures { get; set; }
         public DbSet<BloodSugar> BloodSugars { get; set; }
+        public DbSet<Medicine> Medicines { get; set; }
+        public DbSet<ChronicDisease> ChronicDiseases { get; set; }
+        public DbSet<Allergy> Allergies { get; set; }
+        public DbSet<GeneralReport> GeneralReports { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -88,6 +92,14 @@ namespace SoftwareProject.API
                 .HasForeignKey(r => r.PatientId)
                 .IsRequired(false)
                 .OnDelete(DeleteBehavior.NoAction);
+
+            var cascadeDeleteFKs = modelBuilder.Model.GetEntityTypes()
+                .SelectMany(t => t.GetForeignKeys())
+                .Where(fk => !fk.IsOwnership && fk.DeleteBehavior == DeleteBehavior.Cascade);
+
+            foreach (var FK in cascadeDeleteFKs)
+                FK.DeleteBehavior = DeleteBehavior.NoAction;
+
         }
     }
 }

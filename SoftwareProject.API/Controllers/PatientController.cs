@@ -4,12 +4,14 @@ using Microsoft.EntityFrameworkCore;
 using SoftwareProject.API.Entites;
 using Microsoft.AspNetCore.Authorization;
 using SoftwareProject.API.dto.Request;
-using SoftwareProject.API.dto.clinic;
 using SoftwareProject.API.dto.BloodPressure;
 using SoftwareProject.API.dto.BloodSugar;
 using SoftwareProject.API.dto.Doctor;
-using SoftwareProject.API.dto.MS;
 using SoftwareProject.API.dto.Patient;
+using SoftwareProject.API.dto.alergies;
+using SoftwareProject.API.dto.CD;
+using SoftwareProject.API.dto.medicine;
+using SoftwareProject.API.dto.generalReport;
 
 namespace SoftwareProject.API.Controllers
 {
@@ -56,6 +58,7 @@ namespace SoftwareProject.API.Controllers
 
             return Ok(patientToReturn);
         }
+        
         [HttpPost("profileData")]
         [Authorize(Roles = "Patient")]
         public async Task<IActionResult> SetProfileData(PatientDataDto patientDataDto)
@@ -82,8 +85,12 @@ namespace SoftwareProject.API.Controllers
             await applicationDbContext.SaveChangesAsync();
             return Ok(new Response { Status = "Success", Message = "Patient Data updated successfully." });
         }
+
         [HttpGet("requests")]
-        public async Task<ActionResult> GetAllRequestsForLoggedInPatient()
+        public async Task<ActionResult> GetAllRequestsForLoggedInPatient(
+            [FromQuery] int pageNumber = 1,
+            [FromQuery] int pageSize = 10,
+            [FromQuery] bool? isAnswered = null)
         {
             var userIdClaim = User.FindFirst("id");
 
@@ -93,17 +100,36 @@ namespace SoftwareProject.API.Controllers
             }
 
             var patient = await applicationDbContext.Patients
-                                    .FirstOrDefaultAsync(p => p.UserId == userId);
+                                        .FirstOrDefaultAsync(p => p.UserId == userId);
 
             if (patient == null)
             {
                 return NotFound(new Response { Status = "Error", Message = "Patient not found." });
             }
 
-            var requests = await applicationDbContext.Requests
-                                                     .Where(r => r.PatientId == patient.PatientId)
-                                                     .Include(r => r.Doctor)
-                                                     .ToListAsync();
+            var query = applicationDbContext.Requests
+                                             .Where(r => r.PatientId == patient.PatientId)
+                                             .Include(r => r.Doctor)
+                                             .Include(r => r.Allergy)
+                                             .Include(r => r.ChronicDisease)
+                                             .Include(r => r.Medicine)
+                                             .Include(r => r.GeneralReport)
+                                             .AsQueryable();
+
+            // Apply filter on IsAnswered
+            if (isAnswered.HasValue)
+            {
+                query = query.Where(r => r.IsAnswered == isAnswered.Value);
+            }
+
+            // Apply pagination
+            var totalCount = await query.CountAsync();
+            var totalPages = (int)Math.Ceiling(totalCount / (double)pageSize);
+
+            var requests = await query
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
 
             var patientUser = await applicationDbContext.Users.FirstOrDefaultAsync(u => u.UserId == patient.UserId);
 
@@ -122,11 +148,170 @@ namespace SoftwareProject.API.Controllers
                     PatientName = patientUser.Name,
                     DoctorId = request.DoctorId,
                     DoctorName = doctorUser.Name,
-                }
-                ) ;
+                    IsAnswered = request.IsAnswered,
+                    GeneralReport = request.GeneralReport is null ? null : new GeneralReportGetDto
+                    {
+                        DoctorId = request.GeneralReport.DoctorId,
+                        PatientId = request.GeneralReport.PatientId,
+                        RequestId = request.RequestId,
+                        GeneralReportId = request.GeneralReport.GeneralReportId,
+                        Date = request.GeneralReport.Date,
+                        Diagnosis = request.GeneralReport.Diagnosis,
+                        TreatmentPlan = request.GeneralReport.TreatmentPlan,
+                        Notes = request.GeneralReport.Notes,
+                        Attachment = request.GeneralReport.Attachment,
+                    },
+                    Medicine = request.Medicine is null ? null : new MedicineGetDto
+                    {
+                        DoctorId = request.Medicine.DoctorId,
+                        PatientId = request.Medicine.PatientId,
+                        RequestId = request.RequestId,
+                        MedicineId = request.Medicine.MedicineId,
+                        MedicineName = request.Medicine.MedicineName,
+                        Dosage = request.Medicine.Dosage,
+                        Frequency = request.Medicine.Frequency,
+                        Instructions = request.Medicine.Instructions,
+                        AddedBy = request.Medicine.AddedBy,
+                        IsMaintenace = request.Medicine.IsMaintenace,
+                    },
+                    ChronicDisease = request.ChronicDisease is null ? null : new ChronicDiseaseGetDto
+                    {
+                        DoctorId = request.ChronicDisease.DoctorId,
+                        PatientId = request.ChronicDisease.PatientId,
+                        RequestId = request.RequestId,
+                        ChronicDiseaseId = request.ChronicDisease.ChronicDiseaseId,
+                        ChronicDiseaseName = request.ChronicDisease.ChronicDiseaseName,
+                        Description = request.ChronicDisease.Description,
+                        Causes = request.ChronicDisease.Causes,
+                        Symptoms = request.ChronicDisease.Symptoms,
+                        Digonsis = request.ChronicDisease.Digonsis,
+                        Treatment = request.ChronicDisease.Treatment,
+                        DateOfDiagonsis = request.ChronicDisease.DateOfDiagonsis,
+                        AddedBy = request.ChronicDisease.AddedBy,
+                    },
+                    Allergy = request.Allergy is null ? null : new AllergyGetDto
+                    {
+                        DoctorId = request.Allergy.DoctorId,
+                        PatientId = request.Allergy.PatientId,
+                        RequestId = request.RequestId,
+                        AllergyId = request.Allergy.AllergyId,
+                        AllergyName = request.Allergy.AllergyName,
+                        Symptons = request.Allergy.Symptons,
+                        AddedBy = request.Allergy.AddedBy,
+                    }
+                });
             }
 
-            return Ok(requestsToReturn);
+            return Ok(new
+            {
+                TotalCount = totalCount,
+                TotalPages = totalPages,
+                PageSize = pageSize,
+                PageNumber = pageNumber,
+                Requests = requestsToReturn
+            });
+        }
+
+
+        [HttpGet("requests/{requestid}")]
+        public async Task<ActionResult> GetRequestsForLoggedInPatient(int requestid)
+        {
+            var userIdClaim = User.FindFirst("id");
+
+            if (userIdClaim == null || !int.TryParse(userIdClaim.Value, out int userId))
+            {
+                return Unauthorized(new Response { Status = "Error", Message = "Invalid token." });
+            }
+
+            var patient = await applicationDbContext.Patients
+                                    .FirstOrDefaultAsync(p => p.UserId == userId);
+
+            if (patient == null)
+            {
+                return NotFound(new Response { Status = "Error", Message = "Patient not found." });
+            }
+
+            var request = await applicationDbContext.Requests
+                .Include(r => r.Doctor)
+                .Include(r => r.Allergy)
+                .Include(r => r.ChronicDisease)
+                .Include(r => r.Medicine)
+                .Include(r => r.GeneralReport)
+                .FirstOrDefaultAsync(r => r.RequestId == requestid && r.PatientId == patient.PatientId);
+
+            if (request == null)
+            {
+                return NotFound(new Response { Status = "Error", Message = "Request not found." });
+            }
+
+            var doctorUser = await applicationDbContext.Users.FirstOrDefaultAsync(u => u.UserId == request.Doctor.UserId);
+
+            var patientUser = await applicationDbContext.Users.FirstOrDefaultAsync(u => u.UserId == patient.UserId);
+
+            var requestToReturn = new RequestGetDto
+            {
+                RequestId = request.RequestId,
+                Description = request.Description,
+                Date = request.Date,
+                PatientId = request.PatientId,
+                PatientName = patientUser.Name,
+                DoctorId = request.DoctorId,
+                DoctorName = doctorUser.Name,
+                IsAnswered = request.IsAnswered,
+                GeneralReport = request.GeneralReport is null ? null : new GeneralReportGetDto
+                {
+                    DoctorId = request.GeneralReport.DoctorId,
+                    PatientId = request.GeneralReport.PatientId,
+                    RequestId = request.RequestId,
+                    GeneralReportId = request.GeneralReport.GeneralReportId,
+                    Date = request.GeneralReport.Date,
+                    Diagnosis = request.GeneralReport.Diagnosis,
+                    TreatmentPlan = request.GeneralReport.TreatmentPlan,
+                    Notes = request.GeneralReport.Notes,
+                    Attachment = request.GeneralReport.Attachment,
+                },
+                Medicine = request.Medicine is null ? null : new MedicineGetDto
+                {
+                    DoctorId = request.Medicine.DoctorId,
+                    PatientId = request.Medicine.PatientId,
+                    RequestId = request.RequestId,
+                    MedicineId = request.Medicine.MedicineId,
+                    MedicineName = request.Medicine.MedicineName,
+                    Dosage = request.Medicine.Dosage,
+                    Frequency = request.Medicine.Frequency,
+                    Instructions = request.Medicine.Instructions,
+                    AddedBy = request.Medicine.AddedBy,
+                    IsMaintenace = request.Medicine.IsMaintenace,
+                },
+                ChronicDisease = request.ChronicDisease is null ? null : new ChronicDiseaseGetDto
+                {
+                    DoctorId = request.ChronicDisease.DoctorId,
+                    PatientId = request.ChronicDisease.PatientId,
+                    RequestId = request.RequestId,
+                    ChronicDiseaseId = request.ChronicDisease.ChronicDiseaseId,
+                    ChronicDiseaseName = request.ChronicDisease.ChronicDiseaseName,
+                    Description = request.ChronicDisease.Description,
+                    Causes = request.ChronicDisease.Causes,
+                    Symptoms = request.ChronicDisease.Symptoms,
+                    Digonsis = request.ChronicDisease.Digonsis,
+                    Treatment = request.ChronicDisease.Treatment,
+                    DateOfDiagonsis = request.ChronicDisease.DateOfDiagonsis,
+                    AddedBy = request.ChronicDisease.AddedBy,
+                },
+                Allergy = request.Allergy is null ? null : new AllergyGetDto
+                {
+                    DoctorId = request.Allergy.DoctorId,
+                    PatientId = request.Allergy.PatientId,
+                    RequestId = request.RequestId,
+                    AllergyId = request.Allergy.AllergyId,
+                    AllergyName = request.Allergy.AllergyName,
+                    Symptons = request.Allergy.Symptons,
+                    AddedBy = request.Allergy.AddedBy,
+                }
+            };
+
+
+            return Ok(requestToReturn);
         }
 
         [HttpPost("request/{doctorid}")]
@@ -148,12 +333,13 @@ namespace SoftwareProject.API.Controllers
                 return NotFound(new Response { Status = "Error", Message = "Patient not found." });
             }
 
-            var request = new Request
+            var request = new Entites.Request
             {
                 Description = DtoRequest.Description,
                 Date = DateTime.UtcNow,
                 PatientId = patient.PatientId,
                 DoctorId = doctorid,
+                IsAnswered = false,
             };
 
             applicationDbContext.Requests.Add(request);
@@ -318,6 +504,185 @@ namespace SoftwareProject.API.Controllers
             return Ok(bloodSugarsToReturn);
         }
 
+        [HttpGet("allergies")]
+        public async Task<ActionResult<List<AllergyGetDto>>> GetAllAllergiesForLoggedInPatient()
+        {
+            var userIdClaim = User.FindFirst("id");
 
+            if (userIdClaim == null || !int.TryParse(userIdClaim.Value, out int userId))
+            {
+                return Unauthorized(new Response { Status = "Error", Message = "Invalid token." });
+            }
+
+            var patient = await applicationDbContext.Patients
+                                    .FirstOrDefaultAsync(p => p.UserId == userId);
+
+            if (patient == null)
+            {
+                return NotFound(new Response { Status = "Error", Message = "Patient not found." });
+            }
+
+            var allergies = await applicationDbContext.Allergies.
+                                Where(a => a.PatientId == patient.PatientId)
+                                .ToListAsync();
+
+            var allergiesToReturn = new List<AllergyGetDto>();
+
+            foreach(var a in allergies)
+            {
+                allergiesToReturn.Add(new AllergyGetDto
+                {
+                    AllergyId = a.AllergyId,
+                    DoctorId = a.DoctorId,
+                    PatientId = a.PatientId,
+                    RequestId = a.RequestId,
+                    AllergyName = a.AllergyName,
+                    Symptons = a.Symptons,
+                    AddedBy = a.AddedBy,
+                });
+            }
+
+            return Ok(allergiesToReturn);
+        }
+
+        [HttpGet("chronicDisease")]
+        public async Task<ActionResult<List<ChronicDiseaseGetDto>>> GetAllChronicDiseaseForLoggedInPatient()
+        {
+            var userIdClaim = User.FindFirst("id");
+
+            if (userIdClaim == null || !int.TryParse(userIdClaim.Value, out int userId))
+            {
+                return Unauthorized(new Response { Status = "Error", Message = "Invalid token." });
+            }
+
+            var patient = await applicationDbContext.Patients
+                                    .FirstOrDefaultAsync(p => p.UserId == userId);
+
+            if (patient == null)
+            {
+                return NotFound(new Response { Status = "Error", Message = "Patient not found." });
+            }
+
+            var CDs = await applicationDbContext.ChronicDiseases.
+                                Where(cd => cd.PatientId == patient.PatientId)
+                                .ToListAsync();
+
+            var CDsToReturn = new List<ChronicDiseaseGetDto>();
+
+            foreach (var cd in CDs)
+            {
+                CDsToReturn.Add(new ChronicDiseaseGetDto
+                {
+                    ChronicDiseaseId = cd.ChronicDiseaseId,
+                    DoctorId = cd.DoctorId,
+                    PatientId = cd.PatientId,
+                    RequestId = cd.RequestId,
+                    ChronicDiseaseName = cd.ChronicDiseaseName,
+                    Description = cd.Description,
+                    Causes = cd.Causes,
+                    Symptoms = cd.Symptoms,
+                    Digonsis = cd.Digonsis,
+                    Treatment = cd.Treatment,
+                    DateOfDiagonsis = cd.DateOfDiagonsis,
+                    AddedBy = cd.AddedBy
+                });
+            }
+
+            return Ok(CDsToReturn);
+        }
+
+        [HttpGet("medicine")]
+        public async Task<ActionResult<List<MedicineGetDto>>> GetAllMedicineForLoggedInPatient()
+        {
+            var userIdClaim = User.FindFirst("id");
+
+            if (userIdClaim == null || !int.TryParse(userIdClaim.Value, out int userId))
+            {
+                return Unauthorized(new Response { Status = "Error", Message = "Invalid token." });
+            }
+
+            var patient = await applicationDbContext.Patients
+                                    .FirstOrDefaultAsync(p => p.UserId == userId);
+
+            if (patient == null)
+            {
+                return NotFound(new Response { Status = "Error", Message = "Patient not found." });
+            }
+
+            var medicines = await applicationDbContext.Medicines.
+                                Where(m => m.PatientId == patient.PatientId)
+                                .ToListAsync();
+
+            var medicinesToReturn = new List<MedicineGetDto>();
+
+            foreach (var m in medicines)
+            {
+                medicinesToReturn.Add(new MedicineGetDto
+                {
+                    MedicineId = m.MedicineId,
+                    DoctorId = m.DoctorId,
+                    RequestId = m.RequestId,
+                    PatientId = m.PatientId,
+                    MedicineName = m.MedicineName,
+                    Dosage = m.Dosage,
+                    Frequency = m.Frequency,
+                    Instructions = m.Instructions,
+                    AddedBy = m.AddedBy,
+                    IsMaintenace = m.IsMaintenace
+                });
+            }
+
+            return Ok(medicinesToReturn);
+        }
+        
     }
 }
+
+
+
+
+
+/*
+ [HttpGet("generalReport")]
+        public async Task<ActionResult<List<ChronicDiseaseGetDto>>> GetAllGeneralReportsForLoggedInPatient()
+        {
+            var userIdClaim = User.FindFirst("id");
+
+            if (userIdClaim == null || !int.TryParse(userIdClaim.Value, out int userId))
+            {
+                return Unauthorized(new Response { Status = "Error", Message = "Invalid token." });
+            }
+
+            var patient = await applicationDbContext.Patients
+                                    .FirstOrDefaultAsync(p => p.UserId == userId);
+
+            if (patient == null)
+            {
+                return NotFound(new Response { Status = "Error", Message = "Patient not found." });
+            }
+
+            var GRs = await applicationDbContext.GeneralReports.
+                                Where(cd => cd.PatientId == patient.PatientId)
+                                .ToListAsync();
+
+            var GRsToReturn = new List<GeneralReportGetDto>();
+
+            foreach (var gr in GRs)
+            {
+                GRsToReturn.Add(new GeneralReportGetDto
+                {
+                    GeneralReportId = gr.GeneralReportId,
+                    DoctorId = gr.DoctorId,
+                    PatientId = gr.PatientId,
+                    RequestId = gr.RequestId,
+                    Date = gr.Date,
+                    Diagnosis = gr.Diagnosis,
+                    TreatmentPlan = gr.TreatmentPlan,
+                    Notes = gr.Notes,
+                    AddedBy = gr.AddedBy,
+                });
+            }
+
+            return Ok(GRsToReturn);
+        }
+*/

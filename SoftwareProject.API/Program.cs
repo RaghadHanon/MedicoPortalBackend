@@ -1,9 +1,11 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using SoftwareProject.API;
 using SoftwareProject.API.Authentication;
+using SoftwareProject.API.Entites;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -45,6 +47,9 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 // Add TokenGenerator
 builder.Services.AddSingleton<TokenGenerator>();
+
+// Add PasswordHasher
+builder.Services.AddScoped<PasswordHasher<User>>();
 
 // Add Swagger services
 builder.Services.AddSwaggerGen(c =>

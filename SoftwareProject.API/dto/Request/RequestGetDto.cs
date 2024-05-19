@@ -1,4 +1,7 @@
-﻿using SoftwareProject.API.Entites;
+﻿using SoftwareProject.API.dto.alergies;
+using SoftwareProject.API.dto.CD;
+using SoftwareProject.API.dto.generalReport;
+using SoftwareProject.API.dto.medicine;
 
 namespace SoftwareProject.API.dto.Request
 {
@@ -11,6 +14,11 @@ namespace SoftwareProject.API.dto.Request
         public string? PatientName { get; set; }
         public int? DoctorId { get; set; }
         public string? DoctorName { get; set;}
+        public bool IsAnswered { get; set; }
 
+        public AllergyGetDto? Allergy { get; set; }
+        public ChronicDiseaseGetDto? ChronicDisease { get; set; }
+        public MedicineGetDto? Medicine { get; set; }
+        public GeneralReportGetDto? GeneralReport { get; set; }
     }
 }

@@ -41,6 +41,47 @@ namespace SoftwareProject.API.Migrations
                     b.ToTable("Admins");
                 });
 
+            modelBuilder.Entity("SoftwareProject.API.Entites.Allergy", b =>
+                {
+                    b.Property<int>("AllergyId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("AllergyId"));
+
+                    b.Property<string>("AddedBy")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("AllergyName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("DoctorId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("PatientId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("RequestId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Symptons")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("AllergyId");
+
+                    b.HasIndex("DoctorId");
+
+                    b.HasIndex("PatientId");
+
+                    b.HasIndex("RequestId")
+                        .IsUnique();
+
+                    b.ToTable("Allergies");
+                });
+
             modelBuilder.Entity("SoftwareProject.API.Entites.BloodPressure", b =>
                 {
                     b.Property<int>("BloodPressureId")
@@ -89,6 +130,67 @@ namespace SoftwareProject.API.Migrations
                     b.HasIndex("PatientId");
 
                     b.ToTable("BloodSugars");
+                });
+
+            modelBuilder.Entity("SoftwareProject.API.Entites.ChronicDisease", b =>
+                {
+                    b.Property<int>("ChronicDiseaseId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ChronicDiseaseId"));
+
+                    b.Property<string>("AddedBy")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Causes")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ChronicDiseaseName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("DateOfDiagonsis")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Digonsis")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("DoctorId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("PatientId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("RequestId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Symptoms")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Treatment")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("ChronicDiseaseId");
+
+                    b.HasIndex("DoctorId");
+
+                    b.HasIndex("PatientId");
+
+                    b.HasIndex("RequestId")
+                        .IsUnique();
+
+                    b.ToTable("ChronicDiseases");
                 });
 
             modelBuilder.Entity("SoftwareProject.API.Entites.Clinic", b =>
@@ -153,6 +255,58 @@ namespace SoftwareProject.API.Migrations
                     b.ToTable("Doctors");
                 });
 
+            modelBuilder.Entity("SoftwareProject.API.Entites.GeneralReport", b =>
+                {
+                    b.Property<int>("GeneralReportId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("GeneralReportId"));
+
+                    b.Property<string>("AddedBy")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Attachment")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Diagnosis")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("DoctorId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Notes")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("PatientId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("RequestId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("TreatmentPlan")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("GeneralReportId");
+
+                    b.HasIndex("DoctorId");
+
+                    b.HasIndex("PatientId");
+
+                    b.HasIndex("RequestId")
+                        .IsUnique();
+
+                    b.ToTable("GeneralReports");
+                });
+
             modelBuilder.Entity("SoftwareProject.API.Entites.MedicalSpecification", b =>
                 {
                     b.Property<int>("MedicalSpecificationId")
@@ -168,6 +322,58 @@ namespace SoftwareProject.API.Migrations
                     b.HasKey("MedicalSpecificationId");
 
                     b.ToTable("MedicalSpecifications");
+                });
+
+            modelBuilder.Entity("SoftwareProject.API.Entites.Medicine", b =>
+                {
+                    b.Property<int>("MedicineId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("MedicineId"));
+
+                    b.Property<string>("AddedBy")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("DoctorId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Dosage")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Frequency")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Instructions")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsMaintenace")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("MedicineName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("PatientId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("RequestId")
+                        .HasColumnType("int");
+
+                    b.HasKey("MedicineId");
+
+                    b.HasIndex("DoctorId");
+
+                    b.HasIndex("PatientId");
+
+                    b.HasIndex("RequestId")
+                        .IsUnique();
+
+                    b.ToTable("Medicines");
                 });
 
             modelBuilder.Entity("SoftwareProject.API.Entites.Patient", b =>
@@ -216,6 +422,9 @@ namespace SoftwareProject.API.Migrations
                     b.Property<int?>("DoctorId")
                         .HasColumnType("int");
 
+                    b.Property<bool>("IsAnswered")
+                        .HasColumnType("bit");
+
                     b.Property<int?>("PatientId")
                         .HasColumnType("int");
 
@@ -262,9 +471,6 @@ namespace SoftwareProject.API.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("UserImageUrl")
-                        .HasColumnType("nvarchar(max)");
-
                     b.HasKey("UserId");
 
                     b.ToTable("Users");
@@ -275,8 +481,35 @@ namespace SoftwareProject.API.Migrations
                     b.HasOne("SoftwareProject.API.Entites.User", null)
                         .WithOne()
                         .HasForeignKey("SoftwareProject.API.Entites.Admin", "UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("SoftwareProject.API.Entites.Allergy", b =>
+                {
+                    b.HasOne("SoftwareProject.API.Entites.Doctor", "Doctor")
+                        .WithMany("Allergys")
+                        .HasForeignKey("DoctorId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("SoftwareProject.API.Entites.Patient", "Patient")
+                        .WithMany("Allergys")
+                        .HasForeignKey("PatientId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("SoftwareProject.API.Entites.Request", "Request")
+                        .WithOne("Allergy")
+                        .HasForeignKey("SoftwareProject.API.Entites.Allergy", "RequestId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Doctor");
+
+                    b.Navigation("Patient");
+
+                    b.Navigation("Request");
                 });
 
             modelBuilder.Entity("SoftwareProject.API.Entites.BloodPressure", b =>
@@ -299,6 +532,33 @@ namespace SoftwareProject.API.Migrations
                     b.Navigation("Patient");
                 });
 
+            modelBuilder.Entity("SoftwareProject.API.Entites.ChronicDisease", b =>
+                {
+                    b.HasOne("SoftwareProject.API.Entites.Doctor", "Doctor")
+                        .WithMany("ChronicDiseases")
+                        .HasForeignKey("DoctorId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("SoftwareProject.API.Entites.Patient", "Patient")
+                        .WithMany("ChronicDiseases")
+                        .HasForeignKey("PatientId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("SoftwareProject.API.Entites.Request", "Request")
+                        .WithOne("ChronicDisease")
+                        .HasForeignKey("SoftwareProject.API.Entites.ChronicDisease", "RequestId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Doctor");
+
+                    b.Navigation("Patient");
+
+                    b.Navigation("Request");
+                });
+
             modelBuilder.Entity("SoftwareProject.API.Entites.Doctor", b =>
                 {
                     b.HasOne("SoftwareProject.API.Entites.Clinic", "Clinic")
@@ -313,7 +573,7 @@ namespace SoftwareProject.API.Migrations
                     b.HasOne("SoftwareProject.API.Entites.User", null)
                         .WithOne()
                         .HasForeignKey("SoftwareProject.API.Entites.Doctor", "UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("Clinic");
@@ -321,12 +581,66 @@ namespace SoftwareProject.API.Migrations
                     b.Navigation("MedicalSpecification");
                 });
 
+            modelBuilder.Entity("SoftwareProject.API.Entites.GeneralReport", b =>
+                {
+                    b.HasOne("SoftwareProject.API.Entites.Doctor", "Doctor")
+                        .WithMany("GeneralReports")
+                        .HasForeignKey("DoctorId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("SoftwareProject.API.Entites.Patient", "Patient")
+                        .WithMany("GeneralReports")
+                        .HasForeignKey("PatientId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("SoftwareProject.API.Entites.Request", "Request")
+                        .WithOne("GeneralReport")
+                        .HasForeignKey("SoftwareProject.API.Entites.GeneralReport", "RequestId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Doctor");
+
+                    b.Navigation("Patient");
+
+                    b.Navigation("Request");
+                });
+
+            modelBuilder.Entity("SoftwareProject.API.Entites.Medicine", b =>
+                {
+                    b.HasOne("SoftwareProject.API.Entites.Doctor", "Doctor")
+                        .WithMany("Medicines")
+                        .HasForeignKey("DoctorId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("SoftwareProject.API.Entites.Patient", "Patient")
+                        .WithMany("Medicines")
+                        .HasForeignKey("PatientId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("SoftwareProject.API.Entites.Request", "Request")
+                        .WithOne("Medicine")
+                        .HasForeignKey("SoftwareProject.API.Entites.Medicine", "RequestId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Doctor");
+
+                    b.Navigation("Patient");
+
+                    b.Navigation("Request");
+                });
+
             modelBuilder.Entity("SoftwareProject.API.Entites.Patient", b =>
                 {
                     b.HasOne("SoftwareProject.API.Entites.User", null)
                         .WithOne()
                         .HasForeignKey("SoftwareProject.API.Entites.Patient", "UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
                 });
 
@@ -355,6 +669,14 @@ namespace SoftwareProject.API.Migrations
 
             modelBuilder.Entity("SoftwareProject.API.Entites.Doctor", b =>
                 {
+                    b.Navigation("Allergys");
+
+                    b.Navigation("ChronicDiseases");
+
+                    b.Navigation("GeneralReports");
+
+                    b.Navigation("Medicines");
+
                     b.Navigation("Requests");
                 });
 
@@ -365,11 +687,30 @@ namespace SoftwareProject.API.Migrations
 
             modelBuilder.Entity("SoftwareProject.API.Entites.Patient", b =>
                 {
+                    b.Navigation("Allergys");
+
                     b.Navigation("BloodPressure");
 
                     b.Navigation("BloodSugar");
 
+                    b.Navigation("ChronicDiseases");
+
+                    b.Navigation("GeneralReports");
+
+                    b.Navigation("Medicines");
+
                     b.Navigation("Requests");
+                });
+
+            modelBuilder.Entity("SoftwareProject.API.Entites.Request", b =>
+                {
+                    b.Navigation("Allergy");
+
+                    b.Navigation("ChronicDisease");
+
+                    b.Navigation("GeneralReport");
+
+                    b.Navigation("Medicine");
                 });
 #pragma warning restore 612, 618
         }

@@ -13,7 +13,6 @@ namespace SoftwareProject.API.Entites
         public string Password { get; set; } = default!;
         public string? PhoneNumber { get; set; } = "";
         public string? Address { get; set; } = "";
-        public string? UserImageUrl { get; set; } = "";
         public string Gender { get; set; } = default!;
         public Role Role { get; set; } = default!;
 
