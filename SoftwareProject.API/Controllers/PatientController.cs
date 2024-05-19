@@ -386,23 +386,23 @@ namespace SoftwareProject.API.Controllers
                 );
         }
 
-        [HttpGet("bloodPressures")]
-        public async Task<ActionResult> GetAlBloodBressuresForLoggedInPatient()
+        [HttpGet("bloodPressures/{userName}")]
+        public async Task<ActionResult> GetAlBloodBressuresForLoggedInPatient(string userName)
         {
-            var userIdClaim = User.FindFirst("id");
+            var user = await applicationDbContext.Users.FirstOrDefaultAsync(u => u.Name == userName);
 
-            if (userIdClaim == null || !int.TryParse(userIdClaim.Value, out int userId))
+            if (user == null)
             {
-                return Unauthorized(new Response { Status = "Error", Message = "Invalid token." });
+                return NotFound(new Response { Status = "error", Message = "User with this user name not exist !" });
             }
 
-            var patient = await applicationDbContext.Patients
-                                    .FirstOrDefaultAsync(p => p.UserId == userId);
+            var patient = await applicationDbContext.Patients.FirstOrDefaultAsync(d => d.UserId == user.UserId);
 
             if (patient == null)
             {
-                return NotFound(new Response { Status = "Error", Message = "Patient not found." });
+                return NotFound(new Response { Status = "error", Message = "Patient with this name not exist !" });
             }
+
 
             var bloodBressures = await applicationDbContext.BloodPressures
                                                      .Where(r => r.PatientId == patient.PatientId)
@@ -463,23 +463,23 @@ namespace SoftwareProject.API.Controllers
                 );
         }
 
-        [HttpGet("bloodSugars")]
-        public async Task<ActionResult> GetAlBloodSugarsForLoggedInPatient()
+        [HttpGet("bloodSugars/{userName}")]
+        public async Task<ActionResult> GetAlBloodSugarsForLoggedInPatient(string userName)
         {
-            var userIdClaim = User.FindFirst("id");
+            var user = await applicationDbContext.Users.FirstOrDefaultAsync(u => u.Name == userName);
 
-            if (userIdClaim == null || !int.TryParse(userIdClaim.Value, out int userId))
+            if (user == null)
             {
-                return Unauthorized(new Response { Status = "Error", Message = "Invalid token." });
+                return NotFound(new Response { Status = "error", Message = "User with this user name not exist !" });
             }
 
-            var patient = await applicationDbContext.Patients
-                                    .FirstOrDefaultAsync(p => p.UserId == userId);
+            var patient = await applicationDbContext.Patients.FirstOrDefaultAsync(d => d.UserId == user.UserId);
 
             if (patient == null)
             {
-                return NotFound(new Response { Status = "Error", Message = "Patient not found." });
+                return NotFound(new Response { Status = "error", Message = "Patient with this name not exist !" });
             }
+
 
             var bloodSugars = await applicationDbContext.BloodSugars
                                                      .Where(r => r.PatientId == patient.PatientId)
@@ -504,23 +504,23 @@ namespace SoftwareProject.API.Controllers
             return Ok(bloodSugarsToReturn);
         }
 
-        [HttpGet("allergies")]
-        public async Task<ActionResult<List<AllergyGetDto>>> GetAllAllergiesForLoggedInPatient()
+        [HttpGet("allergies/{userName}")]
+        public async Task<ActionResult<List<AllergyGetDto>>> GetAllAllergiesForLoggedInPatient(string userName)
         {
-            var userIdClaim = User.FindFirst("id");
+            var user = await applicationDbContext.Users.FirstOrDefaultAsync(u => u.Name == userName);
 
-            if (userIdClaim == null || !int.TryParse(userIdClaim.Value, out int userId))
+            if (user == null)
             {
-                return Unauthorized(new Response { Status = "Error", Message = "Invalid token." });
+                return NotFound(new Response { Status = "error", Message = "User with this user name not exist !" });
             }
 
-            var patient = await applicationDbContext.Patients
-                                    .FirstOrDefaultAsync(p => p.UserId == userId);
+            var patient = await applicationDbContext.Patients.FirstOrDefaultAsync(d => d.UserId == user.UserId);
 
             if (patient == null)
             {
-                return NotFound(new Response { Status = "Error", Message = "Patient not found." });
+                return NotFound(new Response { Status = "error", Message = "Patient with this name not exist !" });
             }
+
 
             var allergies = await applicationDbContext.Allergies.
                                 Where(a => a.PatientId == patient.PatientId)
@@ -545,22 +545,21 @@ namespace SoftwareProject.API.Controllers
             return Ok(allergiesToReturn);
         }
 
-        [HttpGet("chronicDisease")]
-        public async Task<ActionResult<List<ChronicDiseaseGetDto>>> GetAllChronicDiseaseForLoggedInPatient()
+        [HttpGet("chronicDisease/{userName}")]
+        public async Task<ActionResult<List<ChronicDiseaseGetDto>>> GetAllChronicDiseaseForLoggedInPatient(string userName)
         {
-            var userIdClaim = User.FindFirst("id");
+            var user = await applicationDbContext.Users.FirstOrDefaultAsync(u => u.Name == userName);
 
-            if (userIdClaim == null || !int.TryParse(userIdClaim.Value, out int userId))
+            if (user == null)
             {
-                return Unauthorized(new Response { Status = "Error", Message = "Invalid token." });
+                return NotFound(new Response { Status = "error", Message = "User with this user name not exist !" });
             }
 
-            var patient = await applicationDbContext.Patients
-                                    .FirstOrDefaultAsync(p => p.UserId == userId);
+            var patient = await applicationDbContext.Patients.FirstOrDefaultAsync(d => d.UserId == user.UserId);
 
             if (patient == null)
             {
-                return NotFound(new Response { Status = "Error", Message = "Patient not found." });
+                return NotFound(new Response { Status = "error", Message = "Patient with this name not exist !" });
             }
 
             var CDs = await applicationDbContext.ChronicDiseases.
@@ -591,22 +590,21 @@ namespace SoftwareProject.API.Controllers
             return Ok(CDsToReturn);
         }
 
-        [HttpGet("medicine")]
-        public async Task<ActionResult<List<MedicineGetDto>>> GetAllMedicineForLoggedInPatient()
+        [HttpGet("medicine/{userName}")]
+        public async Task<ActionResult<List<MedicineGetDto>>> GetAllMedicineForLoggedInPatientt(string userName)
         {
-            var userIdClaim = User.FindFirst("id");
+            var user = await applicationDbContext.Users.FirstOrDefaultAsync(u => u.Name == userName);
 
-            if (userIdClaim == null || !int.TryParse(userIdClaim.Value, out int userId))
+            if (user == null)
             {
-                return Unauthorized(new Response { Status = "Error", Message = "Invalid token." });
+                return NotFound(new Response { Status = "error", Message = "User with this user name not exist !" });
             }
 
-            var patient = await applicationDbContext.Patients
-                                    .FirstOrDefaultAsync(p => p.UserId == userId);
+            var patient = await applicationDbContext.Patients.FirstOrDefaultAsync(d => d.UserId == user.UserId);
 
             if (patient == null)
             {
-                return NotFound(new Response { Status = "Error", Message = "Patient not found." });
+                return NotFound(new Response { Status = "error", Message = "Patient with this name not exist !" });
             }
 
             var medicines = await applicationDbContext.Medicines.
