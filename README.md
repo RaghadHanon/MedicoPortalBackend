@@ -37,6 +37,7 @@ MedicoPortal provides an intuitive and secure platform where patients can manage
 ### Doctors Management:
 - **Add Doctor**: 🩺 Allows a user to register as a doctor.
 - **Get Doctor**: 🔍 Retrieve details of a specific doctor by their username.
+- **Update Profile Info**: ✏️ Modify a doctor's personal information.
 - **List Doctors**: 📋 Retrieve a list of all doctors in the system.
 - **List Doctors Based on Medical Specializations**: 🏥 Retrieve a list of doctors with specific medical specializations.
 - **Update Clinic Info**: 🏢 Modify the details of a doctor's clinic if it exists.
@@ -52,8 +53,8 @@ MedicoPortal provides an intuitive and secure platform where patients can manage
 - **Create Request**: 📩 Send a request to a specific doctor by their ID.
 - **Get Request Details**: 📝 Retrieve details of a specific request by its ID, including the details of the response to this request if it exists.
 - **Add Blood Pressure Measurement**: 💉 Add a new blood pressure measurement.
-- **List Blood Sugar Measurements**: 🍬 Retrieve a detailed list of blood sugar measurements by patient user name.
-- **Add Blood Pressure Measurement**: 💉 Add a new blood pressure measurement.
+- **List Blood Pressure Measurements**: 🍬 Retrieve a detailed list of blood pressure measurements by patient user name.
+- **Add Blood Sugar Measurement**: 💉 Add a new blood sugar measurement.
 - **List Blood Sugar Measurements**: 🍬 Retrieve a detailed list of blood sugar measurements by patient user name.
 - **List Allergies**: 🌿 Retrieve a detailed list of allergies doctors diagnose by patient user name.
 - **List Chronic Diseases**: 🩸 Retrieve a detailed list of chronic diseases doctors diagnose by patient user name.
