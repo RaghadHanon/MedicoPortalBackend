@@ -7,8 +7,13 @@ This project is designed to streamline healthcare management by providing a comp
 MedicoPortal provides an intuitive and secure platform where patients can manage their health information, and healthcare providers can efficiently handle patient data and medical records. Our system ensures that critical medical information is easily accessible and up-to-date, fostering better communication and decision-making between patients and their healthcare providers.
 
 
+
+## MedicoPortal 
+- [MedicoPortal](https://softwareproject-w3yf.onrender.com/)
+
+
+  
 ## Documentation
-For a complete overview of all available endpoints, enriched with usage examples and expected error responses. refer to:
 ### Swagger Documentation
 
 - **MedicoPortal System API**
@@ -18,6 +23,13 @@ For a complete overview of all available endpoints, enriched with usage examples
 
 - **MedicoPortal SRS**
   - [SRS Documentation](https://drive.google.com/file/d/17aBaKFu-sR-lxUW4pH9LwZQVOasAd4cR/view?usp=sharing)
+
+
+
+## Illustration vedio 
+- [MedicoPortal guide vedio](https://drive.google.com/file/d/1QlMdOefKHsPtD-sCjVeVMpC4JDylG5B5/view?usp=drive_link)
+
+
 
 
 ## ⭐ Key Features
