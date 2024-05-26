@@ -118,7 +118,7 @@ MedicoPortal provides an intuitive and secure platform where patients can manage
 | DELETE        | `/api/MedicalSpecification`      | Remove a Medical Specification from the system.
 
 
-- ### Response Endpoints:
+### Response Endpoints:
 | HTTP Method | Endpoint             | Description                              |
 |-------------|----------------------|----------------------------------------- |
 |Post | `/api/response` |Add a new response containing a general Report, Allergy, Medicine, and Chronic Disease to the profile of the patient who sent the request|
