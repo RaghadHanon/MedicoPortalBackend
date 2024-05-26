@@ -8,7 +8,7 @@ MedicoPortal provides an intuitive and secure platform where patients can manage
 
 
 
-## MedicoPortal 
+## MedicoPortal website
 - [MedicoPortal](https://softwareproject-w3yf.onrender.com/)
 
 
