@@ -127,7 +127,7 @@ MedicoPortal provides an intuitive and secure platform where patients can manage
 
 ## Tools and Concepts
 
-This section provides an overview of the key tools, technologies, and concepts used in the development and operation of the Hotel Booking System API.
+This section provides an overview of the key tools, technologies, and concepts used in the development.
 
 ### Programming Languages and Frameworks
 - **C#**: Primary programming language used.
