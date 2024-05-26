@@ -137,7 +137,6 @@ This section provides an overview of the key tools, technologies, and concepts u
 - **Entity Framework Core**: Object-relational mapping (ORM) framework for .NET.
 - **SQL Server**: Database management system used for storing all application data.
 
-The code-first approach enhances the project's flexibility, making it easier to evolve the database schema alongside the application development and maintain version control over database changes.
 
 ### API Documentation and Design
 - **Swagger/OpenAPI**: Used for API specification and documentation.
